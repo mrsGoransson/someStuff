@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emmaChain", "emmaChain\emmaChain.vcxproj", "{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}.Debug|x64.ActiveCfg = Debug|x64
+		{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}.Debug|x64.Build.0 = Debug|x64
+		{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}.Debug|x86.ActiveCfg = Debug|Win32
+		{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}.Debug|x86.Build.0 = Debug|Win32
+		{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}.Release|x64.ActiveCfg = Release|x64
+		{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}.Release|x64.Build.0 = Release|x64
+		{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}.Release|x86.ActiveCfg = Release|Win32
+		{5D2916E5-7A8C-488B-A00C-B2F37D05ABFA}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8661B1E4-A736-46D7-81A4-CA5E90E47EBC}
+	EndGlobalSection
+EndGlobal
