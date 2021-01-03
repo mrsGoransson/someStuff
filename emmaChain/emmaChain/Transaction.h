@@ -6,6 +6,6 @@ namespace emmaChain {
 		std::string mSender;
 		std::string mRecipient;
 		std::string mMessage;
-		int mAmount{};
+		uint32_t mAmount{};
 	};
 }

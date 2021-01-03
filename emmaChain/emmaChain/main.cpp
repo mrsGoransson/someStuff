@@ -7,19 +7,21 @@
 
 int main() {
 	std::thread thread1([]() {
-		emmaChain::Server server;
+		short port = 18080;
+		emmaChain::Server server(port);
 		emmaChain::Blockchain blockchain(server);
 
 		server.Initialize(blockchain);
-		server.Run(18080);	
+		server.Run();
 		});
 
 	std::thread thread2([]() {
-		emmaChain::Server server;
+		short port = 18081;
+		emmaChain::Server server(port);
 		emmaChain::Blockchain blockchain(server);
 
 		server.Initialize(blockchain);
-		server.Run(18081);	
+		server.Run();
 		});
 
 	std::cin.get();
