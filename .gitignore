@@ -361,3 +361,9 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 ConsoleApplication1/
+BinanceWidget/venv/
+BinanceWidget/.idea/
+BinanceWidget/BinanceWidget.spec
+BinanceWidget/build/
+BinanceWidget/dist/
+Agent
