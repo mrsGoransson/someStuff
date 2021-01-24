@@ -1,0 +1,25 @@
+
+SYMBOL_TICKER_VALUES = {
+    'event_type': 'e',
+    'event_time': 'E',
+    'symbol': 's',
+    'price_change': 'p',
+    'price_change_percent': 'P',
+    'weighted_average_price': 'w',
+    'previous_days_close_price': 'x',
+    'current_days_close_price': 'c',
+    'close_trades_quantity': 'Q',
+    'best_bid_price': 'b',
+    'bid_bid_quantity': 'B',
+    'best_ask_price': 'a',
+    'best_ask_quantity': 'A',
+    'open_price': 'o',
+    'high_price': 'h',
+    'low_price': 'l',
+    'total_traded_base_asset_volume': 'v',
+    'total_traded_quote_asset_volume': 'q',
+    'statistics_open_time': 'O',
+    'statistics_close_time': 'C',
+    'first_trade_id': 'F',
+    'total_number_of_trades': 'n'
+}

@@ -7,6 +7,8 @@ from binance.client import Client
 from binance.websockets import BinanceSocketManager
 from twisted.internet import reactor
 
+from SymbolTickerValues import SYMBOL_TICKER_VALUES
+
 
 def _create_and_run_graphical_window():
     window = _create_graphical_window()
@@ -20,7 +22,8 @@ def _create_and_run_graphical_window():
 
         if len(previous_response_data) > 0:
             first_key = list(previous_response_data.keys())[0]
-            if new_binance_response_data[first_key]['E'] > previous_response_data[first_key]['E']:
+            if new_binance_response_data[first_key][SYMBOL_TICKER_VALUES['event_time']] > \
+                    previous_response_data[first_key][SYMBOL_TICKER_VALUES['event_time']]:
                 window['_table_'].update(values=_get_new_data_for_window_table(new_binance_response_data))
 
         with threading_lock:
@@ -38,20 +41,19 @@ def _create_client():
 
 
 def _create_graphical_window():
-    PySimpleGUI.theme('Dark Red')
+    PySimpleGUI.theme('Topanga')
     data = ['Loading...']
-    header_list = ['Currency ', 'High Price   ', 'Low Price    ', 'Price Change ',
-                   'Price Change %', 'Total Nr of Trades']
+    header_list = ['Currency ', 'Weighted Average Price', 'High Price   ', 'Low Price    ', 'Total Nr of Trades']
     layout = [
         [PySimpleGUI.Table(values=data, max_col_width=25,
                            background_color='black',
                            auto_size_columns=True,
                            justification='right', alternating_row_color='grey',
                            key='_table_', headings=header_list)],
-        [PySimpleGUI.Text("You're the Best! <3")],
+        [PySimpleGUI.Text("Not your keys, not your coins!")],
         [PySimpleGUI.Button("Close")]]
 
-    return PySimpleGUI.Window(title="Binance Widget", layout=layout, debugger_enabled=False, finalize=True)
+    return PySimpleGUI.Window(title="Crypto Check v1", layout=layout, debugger_enabled=False, finalize=True)
 
 
 def _create_socket_manager():
@@ -62,18 +64,20 @@ def _create_socket_manager():
 def _get_new_data_for_window_table(latest_response_data):
     new_data_to_render = []
     for element in latest_response_data:
-        new_data_to_render.append([latest_response_data[element]['s'],
-                                   latest_response_data[element]['h'],
-                                   latest_response_data[element]['l'],
-                                   latest_response_data[element]['p'],
-                                   latest_response_data[element]['P'],
-                                   latest_response_data[element]['n']])
+        if latest_response_data[element][SYMBOL_TICKER_VALUES['event_time']] > 0:
+            new_data_to_render.append([element,
+                                       latest_response_data[element][SYMBOL_TICKER_VALUES['weighted_average_price']],
+                                       latest_response_data[element][SYMBOL_TICKER_VALUES['high_price']],
+                                       latest_response_data[element][SYMBOL_TICKER_VALUES['low_price']],
+                                       latest_response_data[element][SYMBOL_TICKER_VALUES['total_number_of_trades']]])
+
+        else:
+            new_data_to_render.append([element, 0, 0, 0, 0])
     return new_data_to_render
 
 
 def _start_trade_history_web_socket_for_symbol(symbol_to_start):
     connection_keys.append(socket_manager.start_symbol_ticker_socket(symbol_to_start, _trade_history))
-    return socket_manager
 
 
 def _terminate_web_sockets():
@@ -109,6 +113,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     connection_keys = []
+    binance_response_data = {}
     client = _create_client()
     socket_manager = _create_socket_manager()
     for symbol in symbols:
@@ -116,8 +121,8 @@ if __name__ == '__main__':
             symbol = symbol[:-1]
 
         _start_trade_history_web_socket_for_symbol(symbol)
+        binance_response_data[symbol] = {'E': 0}
 
-    binance_response_data = {}
     socket_manager.start()
 
     threading_lock = threading.Lock()
