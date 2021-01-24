@@ -96,7 +96,7 @@ def _trade_history(message):
 
 
 if __name__ == '__main__':
-    print("Hello, don't close me unless you want to close Binance Widget")
+    print("Hello, don't close me unless you want to close the application!")
 
     symbols_list_file_name = 'symbols.txt'
     if path.isfile(symbols_list_file_name):
