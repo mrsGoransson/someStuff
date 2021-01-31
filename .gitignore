@@ -360,10 +360,15 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Test project
 ConsoleApplication1/
+
+# BinanceWidget
 BinanceWidget/venv/
 BinanceWidget/.idea/
 BinanceWidget/BinanceWidget.spec
 BinanceWidget/build/
 BinanceWidget/dist/
 Agent
+BinanceWidget/sms-config.json
