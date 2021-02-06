@@ -36,14 +36,13 @@ class CTextMessageHandler(IAlerter):
 
     def _send_text_message(self, message):
         try:
-            #from_number = self._sms_config_data['from_phone_number']
-            #to_number = self._sms_config_data['to_phone_number']
-            #self._sms_client.messages.create(
-             #   body=message,
-             #   from_=from_number,
-             #   to=to_number
-            #)
-            print(message);
+            from_number = self._sms_config_data['from_phone_number']
+            to_number = self._sms_config_data['to_phone_number']
+            self._sms_client.messages.create(
+                body=message,
+                from_=from_number,
+                to=to_number
+            )
 
         except (twilio.base.exceptions.TwilioRestException, json.decoder.JSONDecodeError):
             print("Error: Can't send any text message to alert, check if sms-config is correct")

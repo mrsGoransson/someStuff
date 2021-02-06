@@ -69,4 +69,3 @@ class CAlertSystem:
                        and change_percentage < self._alert_data[symbol_to_evaluate]['alert_value_down'])
 
         return False
-
