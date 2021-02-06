@@ -29,7 +29,7 @@ class CGraphicalWindow:
             'texts': {'enabled': 'Disable Alert Messages', 'disabled': 'Enable Alert Messages'}}
 
     def start_and_run(self):
-        window = self._create_graphical_window
+        window = self._create_graphical_window()
         previous_response_data = {}
         new_binance_response_data = {}
 
@@ -83,12 +83,10 @@ class CGraphicalWindow:
 
         return PySimpleGUI.Window(title="Crypto Check v1.1", layout=layout, debugger_enabled=False, finalize=True)
 
-    @property
     def _get_alerts_button_text(self, alerts_enabled):
         return self._alerts_button_data['texts']['enabled'] \
             if alerts_enabled else self._alerts_button_data['texts']['disabled']
 
-    @property
     def _get_alerts_button_colors(self, alerts_enabled):
         return self._alerts_button_data['colors']['enabled'] \
             if alerts_enabled else self._alerts_button_data['colors']['disabled']
