@@ -31,7 +31,7 @@ class CTextMessageHandler(IAlerter):
             print("Error: not enough data in sms-config, alert service will not work!")
 
     # IAlerter
-    def __alert__(self, message):
+    def alert(self, message):
         self._send_text_message(message)
 
     def _send_text_message(self, message):

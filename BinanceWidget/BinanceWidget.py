@@ -1,19 +1,18 @@
 import sys
-import time
 from os import path
-from threading import Lock, Thread
+from threading import Thread
+from distutils.util import strtobool
 
 import PySimpleGUI
-from binance.client import Client as BinanceClient
-from binance.websockets import BinanceSocketManager
-from twisted.internet import reactor
 
 from AlertSystem import CAlertSystem
+from BinanceManager import CBinanceManager
 from SymbolTickerValues import SYMBOL_TICKER_VALUES
 from TextMessageHandler import CTextMessageHandler
+from Timer import CTimer
 
 
-def _create_and_run_graphical_window(alerter_system):
+def _create_and_run_graphical_window():
     window = _create_graphical_window()
     previous_response_data = {}
     new_binance_response_data = {}
@@ -23,11 +22,11 @@ def _create_and_run_graphical_window(alerter_system):
         if event == "_close" or event == PySimpleGUI.WIN_CLOSED:
             break
         elif event == '_toggle_alerts':
-            alerter_system.__toggle_alerts_enabled__()
-            if alerter_system.__alerts_enabled__():
+            alert_system.toggle_alerts_enabled()
+            if alert_system.alerts_enabled():
                 window['_toggle_alerts'].update(text='Disable Alert Messages', button_color=('black', 'orange'))
             else:
-                window['_toggle_alerts'].update(text='Enable Alert Messages', button_color=('white', 'green'))
+                window['_toggle_alerts'].update(text='Enable Alert Messages', button_color=('light goldenrod', 'green'))
 
         if len(previous_response_data) > 0:
             first_key = list(previous_response_data.keys())[0]
@@ -35,18 +34,12 @@ def _create_and_run_graphical_window(alerter_system):
                     previous_response_data[first_key][SYMBOL_TICKER_VALUES['event_time']]:
                 window['_table'].update(values=_get_new_data_for_window_table(new_binance_response_data))
 
-        with binance_data_lock:
-            previous_response_data = new_binance_response_data.copy()
-            new_binance_response_data = binance_response_data.copy()
+        previous_response_data = new_binance_response_data.copy()
+        new_binance_response_data = binance_manager.get_data()
 
         window.refresh()
 
     window.close()
-
-
-def _create_binance_client():
-    new_client = BinanceClient()
-    return new_client
 
 
 def _create_graphical_window():
@@ -63,15 +56,12 @@ def _create_graphical_window():
                            key='_table', headings=header_list)],
         [PySimpleGUI.Text("Not your keys, not your coins!")],
         [PySimpleGUI.Button(button_text="Close", key='_close'),
-         PySimpleGUI.Button(button_text='Disable Alert Messages', key='_toggle_alerts',
-                            button_color=('black', 'orange'))]]
+         PySimpleGUI.Button(button_text='Disable Alert Messages' if alert_system.alerts_enabled() else 'Enable Alert '
+                                                                                                       'Messages',
+                            button_color=('black', 'orange') if alert_system.alerts_enabled() else ('light goldenrod', 'green'),
+                            key='_toggle_alerts')]]
 
     return PySimpleGUI.Window(title="Crypto Check v1.1", layout=layout, debugger_enabled=False, finalize=True)
-
-
-def _create_binance_socket_manager():
-    new_socket_manager = BinanceSocketManager(binance_client)
-    return new_socket_manager
 
 
 def _get_new_data_for_window_table(latest_response_data):
@@ -117,31 +107,10 @@ def _resolve_symbol_line(symbol_line):
     return [resolved_symbol, alert_value_up, alert_value_down]
 
 
-def _start_trade_history_web_socket_for_symbol(symbol_to_start):
-    connection_keys.append(binance_socket_manager.start_symbol_ticker_socket(symbol_to_start, _trade_history))
-
-
-def _terminate_web_sockets():
-    for key in connection_keys:
-        binance_socket_manager.stop_socket(key)
-
-    reactor.stop()
-
-
-def _trade_history(message):
-    if SYMBOL_TICKER_VALUES['event_type'] in message and SYMBOL_TICKER_VALUES['symbol'] in message:
-        if message[SYMBOL_TICKER_VALUES['event_type']] == 'error':
-            print("SERVER ERROR: for " + message[SYMBOL_TICKER_VALUES['symbol']])
-        else:
-            with binance_data_lock:
-                binance_response_data[message[SYMBOL_TICKER_VALUES['symbol']]] = message
-
-
 if __name__ == '__main__':
     print("Hello, don't close me unless you want to close the application!")
-
-    alerts_enabled = True
-    alert_system = CAlertSystem(CTextMessageHandler(), alerts_enabled)
+    timer = CTimer()
+    timer.start()
 
     symbols_list_file_name = 'symbols.txt'
     if path.isfile(symbols_list_file_name):
@@ -157,35 +126,28 @@ if __name__ == '__main__':
         input("Press 'enter' to exit...")
         sys.exit(1)
 
-    connection_keys = []
-    binance_response_data = {}
-    binance_client = _create_binance_client()
-    binance_socket_manager = _create_binance_socket_manager()
+    alerts_enabled = True
+    if len(sys.argv) >= 2:
+        alerts_enabled = bool(strtobool(sys.argv[1]))
 
+    alert_system = CAlertSystem(CTextMessageHandler(), alerts_enabled)
+    binance_manager = CBinanceManager()
     for line in symbol_file_lines:
         [symbol_to_load, warning_value_up, warning_value_down] = _resolve_symbol_line(line)
         if len(symbol_to_load) < 1:
             continue
 
-        binance_response_data[symbol_to_load] = {SYMBOL_TICKER_VALUES['event_time']: 0}
-        alert_system.__register_symbol__(symbol_to_load, warning_value_up, warning_value_down)
-        _start_trade_history_web_socket_for_symbol(symbol_to_load)
+        binance_manager.register_symbol(symbol_to_load)
+        alert_system.register_symbol(symbol_to_load, warning_value_up, warning_value_down)
 
-    binance_data_lock = Lock()
-    binance_socket_manager.start()
-
-    graphical_window_thread = Thread(target=_create_and_run_graphical_window, args=(alert_system, ), daemon=True)
+    binance_manager.start()
+    graphical_window_thread = Thread(target=_create_and_run_graphical_window, daemon=True)
     graphical_window_thread.start()
 
     while True:
-        frame_start_time = time.perf_counter()
-
         if not graphical_window_thread.is_alive():
-            _terminate_web_sockets()
+            binance_manager.stop()
             sys.exit()
 
-        alert_system.__update__(frame_start_time, binance_data_lock, binance_response_data)
-
-        frame_time = time.perf_counter() - frame_start_time
-        while frame_time < 0.017:
-            frame_time = time.perf_counter() - frame_start_time
+        alert_system.update(timer, binance_manager.get_data())
+        timer.update()

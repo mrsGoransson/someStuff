@@ -1,4 +1,3 @@
-
 SYMBOL_TICKER_VALUES = {
     'event_type': 'e',
     'event_time': 'E',

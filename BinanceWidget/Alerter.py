@@ -3,5 +3,5 @@ import abc
 
 class IAlerter(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def __alert__(self, message):
+    def alert(self, message):
         raise NotImplementedError
