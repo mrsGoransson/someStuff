@@ -25,7 +25,7 @@ class CAlertSystem:
 
     def register_symbol(self, symbol, alert_value_up, alert_value_down):
         self._alert_data[symbol] = {'has_alerted': False, 'alert_value_up': alert_value_up,
-                                    'alert_value_down': alert_value_down, 'alerted_at': 0}
+                                    'alert_value_down': alert_value_down, 'alerted_at': CTimer.get_current_time()}
 
     def toggle_alerts_enabled(self):
         with self._alerts_enabled_lock:
@@ -34,7 +34,7 @@ class CAlertSystem:
                 self._on_alerts_enabled()
 
     def update(self, binance_response_data):
-        if self.alerts_enabled():
+        if self.alerts_enabled() and len(binance_response_data) > 0:
             for symbol in self._alert_data:
                 percentage_change = _get_change_percentage_for_symbol(binance_response_data, symbol)
                 if self._should_alert_user_for(symbol, percentage_change):

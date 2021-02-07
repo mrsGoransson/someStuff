@@ -1,10 +1,10 @@
 import json
 import twilio.base
 
-from Alerter import IAlerter
-
 from os import path
 from twilio.rest import Client as SmsClient
+
+from Alerter import IAlerter
 
 
 def _initialize_sms_service(config_path):
