@@ -14,6 +14,7 @@ def _on_symbols_changed():
     binance_manager.reset()
     symbol_loader.reload()
     _register_symbols()
+    binance_manager.start()
 
 
 def _register_symbols():

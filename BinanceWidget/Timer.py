@@ -32,6 +32,7 @@ class CTimer:
         new_time = time.time()
         self._elapsed_time = new_time - self._start_time
         self._delta_time = new_time - self._last_time
-        while self._delta_time < 0.017:
-            self._delta_time = time.time() - self._last_time
+        if self._delta_time < 0.017:
+            time.sleep(0.017-self._delta_time)
+        self._delta_time = time.time() - self._last_time
         self._last_time = new_time
