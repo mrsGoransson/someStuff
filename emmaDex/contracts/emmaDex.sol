@@ -32,7 +32,6 @@ contract emmaDex is Wallet {
     uint public _nextOrderId;
     mapping(bytes32=>mapping(ESide=>SOrder[])) public _orderBook;
 
-    event DebugMessage(string message);
     event OrderExecuted(address buyer, address seller, bytes32 ticker, uint amount, uint price);
 
     function cancelLimitOrder(ESide side, bytes32 ticker) public tokenExists(ticker) {
