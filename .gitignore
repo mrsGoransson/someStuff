@@ -372,3 +372,10 @@ BinanceWidget/build/
 BinanceWidget/dist/
 Agent
 BinanceWidget/sms-config.json
+
+# Smart Contracts
+SmartContracts/ethereum-201/
+
+# emmaDex
+emmaDex/secret.json
+emmaDex/build/
